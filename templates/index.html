@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph RAG Chatbot</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        h1 {
+            color: #007BFF;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        #chat-form {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #chat-form input[type="text"] {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            margin-right: 10px;
+        }
+
+        #chat-form input[type="text"]:focus {
+            border-color: #007BFF;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+
+        #chat-form button {
+            padding: 12px 20px;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        #chat-form button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        #response {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+            color: #333;
+            display: none; /* Initially hidden */
+        }
+
+        .debug-message {
+            margin-top: 10px;
+            color: #ff0000;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ask a Question</h1>
+    <form id="chat-form">
+        <input type="text" id="question" placeholder="Ask a question..." required>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="response"></div>
+    <div id="debug-message" class="debug-message"></div>
+
+    <script>
+        document.getElementById('chat-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const question = document.getElementById('question').value;
+
+            // Debug: Log question submission
+            console.log('Submitted question:', question);
+
+            // Show debug message indicating button click
+            document.getElementById('debug-message').innerHTML = 'Button clicked.';
+
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ 'question': question })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+
+                // Debug: Log fetched data
+                console.log('Fetched data:', data);
+
+                const responseElement = document.getElementById('response');
+                responseElement.innerHTML = `<p>${data.answer}</p>`;
+                responseElement.style.display = 'block';  // Make response visible
+            } catch (error) {
+                const responseElement = document.getElementById('response');
+                responseElement.innerHTML = `<p>Error: ${error.message}</p>`;
+                responseElement.style.display = 'block';  // Make response visible
+            }
+        });
+    </script>
+</body>
+</html>
