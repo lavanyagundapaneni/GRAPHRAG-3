@@ -12,7 +12,7 @@ app = Flask(__name__)
 # Neo4j connection settings
 uri = "bolt://localhost:7687"
 user = "neo4j"
-password = "gundapaneni"
+password = "NEO4J_PASSWORD"
 
 # Initialize Neo4j driver
 try:
